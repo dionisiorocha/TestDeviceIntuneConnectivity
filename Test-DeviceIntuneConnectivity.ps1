@@ -1,7 +1,7 @@
 <# 
  
 .SYNOPSIS
-    Test-DeviceIntuneConnectivity v1.0 PowerShell script.
+    Test-DeviceIntuneConnectivity v1.1 PowerShell script.
 
 .DESCRIPTION
     Test-DeviceIntuneConnectivity is a PowerShell script that helps to test the Internet connectivity to the required Microsoft resources under the users context to validate the connection status between the device that needs to be connected to Microsoft Intune as MDM-managed devices (AADJ/HAADJ):
@@ -55,6 +55,10 @@ Function getEndpointList {
     $endpointListCategories += [PsObject]@{id = 179; category = 'Android (AOSP) Device Management' }
     $endpointListCategories += [PsObject]@{id = 181; category = 'Remote Help' }
     $endpointListCategories += [PsObject]@{id = 182; category = 'Collect Diagnostics' }
+    $endpointListCategories += [PsObject]@{id = 186; category = 'Microsoft Azure Attestation' }
+    $endpointListCategories += [PsObject]@{id = 187; category = 'Dependency - Remote Help web pubsub' }
+    $endpointListCategories += [PsObject]@{id = 188; category = 'Remote Help Dependancy for GCC customers' }
+    $endpointListCategories += [PsObject]@{id = 189; category = 'Feature flighting (opt in/out) may not function if this is not included' }
     
     # Create new output object and extract relevant test information (ID, category, URLs only)
     [PsObject[]]$endpointRequestList = @()
@@ -75,17 +79,18 @@ Function getEndpointList {
 }
 
 Function Test-DeviceIntuneConnectivity {
+    # Prepare variables
     $ErrorActionPreference = 'silentlycontinue'
-    ''
     $TestFailed = $false
 
+    # Get the proxy information
     $ProxyServer = checkProxy
 
+    # Get the list of endpoints
     $endpointList = getEndpointList
-    ''
-    ''
-    Write-Host "Checking Internet Connectivity..." -ForegroundColor Yellow
 
+    Write-Host "Checking Internet Connectivity..." -ForegroundColor Yellow
+    # For each endpoint, check the connectivity
     foreach ($endpoint in $endpointList) {        
         Write-Host "Checking Category: ..." $endpoint.category -ForegroundColor Yellow
         foreach ($url in $endpoint.urls) {
