@@ -94,13 +94,14 @@ Function Test-DeviceIntuneConnectivity {
     foreach ($endpoint in $endpointList) {        
         Write-Host "Checking Category: ..." $endpoint.category -ForegroundColor Yellow
         foreach ($url in $endpoint.urls) {
+            $TestResult = $null # Reset the test variable
             if ($ProxyServer -eq "NoProxy") {
-                $TestResult = (Invoke-WebRequest -uri $url -UseBasicParsing).StatusCode
+                $TestResult = (Test-NetConnection -ComputerName $url -Port 443).TcpTestSucceeded            
             }
             else {
-                $TestResult = (Invoke-WebRequest -uri $url -UseBasicParsing -Proxy $ProxyServer).StatusCode
+                $TestResult = (Invoke-WebRequest -uri $url -UseBasicParsing -Proxy $ProxyServer -SkipHttpErrorCheck).StatusCode
             }
-            if ($TestResult -eq 200) {
+            if (($ProxyServer -eq "NoProxy" && $TestResult -eq $True) -or ($ProxyServer -ne "NoProxy" && $TestResult -eq 200)) {
                 if ($endpoint.id -eq 170 -and $url.StartsWith('approd')) {
                     Write-Host "Connection to " $url ".............. Succeeded (needed for Asia & Pacific tenants only)." -ForegroundColor Green 
                 }
