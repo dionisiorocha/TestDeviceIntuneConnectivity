@@ -101,7 +101,7 @@ Function Test-DeviceIntuneConnectivity {
             else {
                 $TestResult = (Invoke-WebRequest -uri $url -UseBasicParsing -Proxy $ProxyServer -SkipHttpErrorCheck).StatusCode
             }
-            if (($ProxyServer -eq "NoProxy" && $TestResult -eq $True) -or ($ProxyServer -ne "NoProxy" && $TestResult -eq 200)) {
+            if (($ProxyServer -eq "NoProxy" -and $TestResult -eq $True) -or ($ProxyServer -ne "NoProxy" -and $TestResult -eq 200)) {
                 if ($endpoint.id -eq 170 -and $url.StartsWith('approd')) {
                     Write-Host "Connection to " $url ".............. Succeeded (needed for Asia & Pacific tenants only)." -ForegroundColor Green 
                 }
